@@ -28,6 +28,15 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Error writing file: %s\n", err)
 		}
 		fmt.Println("Initialized git directory")
+	case "cat-file":
+		sha := os.Args[3]
+		path := fmt.Sprintf(".git/object/%v/%v", sha[0:2], sha[2:])
+		file, _ := os.Open(path)
+		r, _ := zlib.NewReader(io.Reader(file))
+		s, _ := io.ReadAll(r)
+		parts := strings.Split(string(s), "\x00")
+		fmt.Print(parts[1])
+		r.Close()
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command %s\n", command)
 		os.Exit(1)
